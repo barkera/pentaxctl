@@ -10,9 +10,14 @@ use std::time::Duration;
 fn main() {
     let camera = Camera::new("192.168.0.1".to_string());
 
+    println!("Setting ISO to 1600");
+    camera.set_iso(1600).expect("could not set ISO");
+
     // Take an exposure when in bulb mode.
     println!("Taking photo...");
-    camera.shutter_press().expect("could not press shutter (are you in Bulb?)");
+    camera
+        .shutter_press()
+        .expect("could not press shutter (are you in Bulb?)");
 
     sleep(Duration::from_millis(250));
 

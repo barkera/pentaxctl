@@ -77,8 +77,29 @@ impl Camera {
         Ok(data)
     }
 
+    fn put(
+        &self,
+        url: String,
+        data: Option<String>,
+    ) -> Result<Vec<u8>, Error> {
+        let mut res = match data {
+            Some(body) => self.client.put(&url).body(body).send()?,
+            None => self.client.put(&url).send()?,
+        };
+
+        let data = validate_response(&mut res)?;
+        Ok(data)
+    }
+
     pub fn set_iso(&self, iso: usize) -> Result<(), Error> {
-        unimplemented!();
+        let data = self.put(
+            format!("http://{}/v1/params/camera", self.addr),
+            Some(format!("sv={}", iso)),
+        )?;
+        let json_str = String::from_utf8(data)?;
+        validate_json_response(&json_str)?;
+
+        Ok(())
     }
 
     pub fn get_latest_capture(&self) -> Result<Vec<u8>, Error> {
